@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const MakeAppointment = () => {
     return (
         <div>
@@ -10,8 +12,8 @@ const MakeAppointment = () => {
                                 <h1 class="display-4">Make An Appointment For Your Family</h1>
                             </div>
                             <p class="text-white mb-5">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum. Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit. Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                            <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="">Find Doctor</a>
-                            <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="">Read More</a>
+                            <Link class="btn btn-dark rounded-pill py-3 px-5 me-3" to="">Find Doctor</Link>
+                            <Link class="btn btn-outline-dark rounded-pill py-3 px-5" to="">Read More</Link>
                         </div>
                         <div class="col-lg-6">
                             <div class="bg-white text-center rounded p-5">

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import useUserContext from "../../hooks/useUserContext";
 const Home = () => {
-    const { user, saveUser } = useUserContext();
+    const { user } = useUserContext();
     return (
         <div>
             <div class="container-fluid bg-primary py-5 mb-5 hero-header">

@@ -19,12 +19,10 @@ function MeetingRoom({ role = 0 }) {
     var sdkKey = 'LPqZQdOeTCWdA5fspfFWmg'
     var meetingNumber = "7602498268"
     var passWord = "452002"
-    var role = role
     var userName = 'Doctor'
     var userEmail = ''
     var registrantToken = ''
     var zakToken = ''
-    var leaveUrl = 'http://localhost:3000'
 
     const location = useLocation()
 

@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import useUserContext from "../../hooks/useUserContext";
 
 const MeetingDoctor = () => {
-    const { user, saveUser } = useUserContext();
+    const { user } = useUserContext();
     let { state } = useLocation();
     const date = new Date();
     const time = date.getHours() + ':' + date.getMinutes();
@@ -15,7 +15,7 @@ const MeetingDoctor = () => {
                         <div className="mb-4">
                             <h5 className="d-inline-block text-primary text-uppercase border-bottom border-5">Appointment</h5>
                         </div>
-                        <img src="https://www.sim.hcmut.edu.vn/wp-content/uploads/2018/08/pexels-photo.jpg" alt="Image" className="img-fluid rounded-3 shadow-sm" />
+                        <img src="https://www.sim.hcmut.edu.vn/wp-content/uploads/2018/08/pexels-photo.jpg" className="img-fluid rounded-3 shadow-sm" />
                     </div>
                     <div className="col-lg-6">
                         <div className="bg-light text-center rounded p-5">
