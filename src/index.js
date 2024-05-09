@@ -1,13 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Page/Home';
+import MakeAppointment from './components/Page/MakeAppointment';
+import FindPatient from './components/Page/FindPatient';
+import CheckSchedule from './components/Page/CheckSchedule';
+import MeetingDoctor from './components/Page/MeetingPage';
+import JoinMeeting from './components/Page/JoinMeeting';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <App>
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route path="*" element={<h1>Not Found</h1>} />
+          <Route path="/make-appointment" element={<MakeAppointment />} />
+          <Route path="/check-appointment" element={<CheckSchedule />} />
+          <Route path="/find-patient" element={<FindPatient />} />
+          <Route path="/doctor/meeting" element={<MeetingDoctor />} />
+          <Route path="join-meeting" element={<JoinMeeting />} />
+        </Routes>
+      </App>
+    </Router>
   </React.StrictMode>
 );
 
