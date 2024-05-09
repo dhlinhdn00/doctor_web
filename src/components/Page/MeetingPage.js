@@ -15,7 +15,7 @@ const MeetingDoctor = () => {
                         <div className="mb-4">
                             <h5 className="d-inline-block text-primary text-uppercase border-bottom border-5">Appointment</h5>
                         </div>
-                        <img src="https://www.sim.hcmut.edu.vn/wp-content/uploads/2018/08/pexels-photo.jpg" className="img-fluid rounded-3 shadow-sm" />
+                        <img alt="" src="https://www.sim.hcmut.edu.vn/wp-content/uploads/2018/08/pexels-photo.jpg" className="img-fluid rounded-3 shadow-sm" />
                     </div>
                     <div className="col-lg-6">
                         <div className="bg-light text-center rounded p-5">
