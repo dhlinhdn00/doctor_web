@@ -13,7 +13,7 @@ const Home = () => {
                             </h5>
                             <h1 class="display-1 text-white mb-md-4">Best Healthcare Solution For Doctors</h1>
                             <div class="pt-2">
-                                <Link to="/find-patient" class="btn btn-light rounded-pill py-md-3 px-md-5 mx-2">Find Patient</Link>
+                                {/* <Link to="/find-patient" class="btn btn-light rounded-pill py-md-3 px-md-5 mx-2">Find Patient</Link> */}
                                 <Link to="/check-appointment" class="btn btn-outline-light rounded-pill py-md-3 px-md-5 mx-2">Check Appointment</Link>
                             </div>
                         </div>

@@ -54,9 +54,10 @@ function MeetingRoom({ role = 0 }) {
         e.preventDefault();
 
         fetch(authEndpoint, {
-            mode: 'no-cors',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+             },
             body: JSON.stringify({
                 meetingNumber: meetingNumber,
                 role: role
@@ -123,16 +124,16 @@ function MeetingRoom({ role = 0 }) {
             console.error('Error updating user confirmation:', error);
         }
 
-        navigate("/home")
+        navigate("/")
     }
 
     return (
-        <div style={{ 'marginTop': '50px', 'width': '100%', 'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center' }}>
+        <div style={{ 'marginTop': '50px', 'width': '80%' }}>
             {/* For Component View */}
             <div id="meetingSDKElement" className='meetingSDKElement'>
                 {/* Zoom Meeting SDK Component View Rendered Here */}
             </div>
-            {stateMeeting ? <button onClick={handleEndMeeting}>End meeting</button> : ""}
+            {stateMeeting ? <button className="btn btn-primary w-100 py-3" onClick={handleEndMeeting}>End meeting</button> : ""}
             <div>
                 {stateConnect ? "" : <button className="btn btn-primary w-100 py-3" onClick={getSignature}>{stateConnect ? "Connecting ..." : "Join Meeting"}</button>}
             </div>
