@@ -6,7 +6,7 @@ const UserContextProvider = ({ children }) => {
 
   const [user, setUser] = useState({
     id: 6,
-    username: 'DR. Phan Nguyên Đạt',
+    username: 'DR. Đạt Phan',
     isAuthenticated: false,
     isStaff: true,
   })

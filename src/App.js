@@ -1,10 +1,10 @@
 import Footer from './components/Layout/Footer';
 import Header from './components/Layout/Header';
-import UserContextProvider from './context/userContext';
+import { AuthProvider } from './context/authContext'; 
 
 function App(props) {
   return (
-    <UserContextProvider>
+    <AuthProvider>
       <div>
         <Header />
         <div className="container-fluid">
@@ -14,7 +14,7 @@ function App(props) {
         </div>
         <Footer />
       </div>
-    </UserContextProvider>
+    </AuthProvider>
   );
 }
 export default App;
