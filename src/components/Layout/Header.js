@@ -5,9 +5,9 @@ import { useAuth } from '../../context/authContext';
 const Header = () => {
   const { user, logout } = useAuth();
 
-  // Định nghĩa phong cách cho liên kết đang được kích hoạt
+  // Define active link style
   const activeLinkStyle = {
-    color: 'blue', // Màu này chỉ là ví dụ, bạn có thể thay đổi theo ý muốn
+    color: 'blue', // This color is just an example, you can change it as desired
     textDecoration: 'underline'
   };
 
@@ -29,7 +29,7 @@ const Header = () => {
             </div>
             <div className="col-md-6 text-center text-lg-end">
               <div className="d-inline-flex align-items-center">
-                {/* Cập nhật các liên kết mạng xã hội nếu cần */}
+                {/* Update social links if needed */}
               </div>
             </div>
           </div>
@@ -56,11 +56,11 @@ const Header = () => {
                 <NavLink exact to="/" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Home
                 </NavLink>
-                <NavLink to="/about" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
-                  About
+                <NavLink to="/check-appointment" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  Appointment
                 </NavLink>
-                <NavLink to="/service" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
-                  Service
+                <NavLink to="/show-patient" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  Patient
                 </NavLink>
                 <NavLink to="/pricing" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Pricing

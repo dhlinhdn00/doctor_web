@@ -12,6 +12,7 @@ import JoinMeeting from './components/Page/JoinMeeting';
 import Login from './components/Page/Login'; 
 import Logout from './components/Page/Logout';
 import Register from './components/Page/Register';
+import ShowPatient from './components/Page/ShowPatient';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -32,7 +33,7 @@ root.render(
           <Route path="/logout" element={<Logout />} />
           <Route path="/make-appointment" element={isAuthenticated() ? <MakeAppointment /> : <Navigate to="/login" />} />
           <Route path="/check-appointment" element={isAuthenticated() ? <CheckSchedule /> : <Navigate to="/login" />} />
-          <Route path="/find-patient" element={isAuthenticated() ? <FindPatient /> : <Navigate to="/login" />} />
+          <Route path="/show-patient" element={isAuthenticated() ? <ShowPatient /> : <Navigate to="/login" />} />
           <Route path="/doctor/meeting" element={isAuthenticated() ? <MeetingDoctor /> : <Navigate to="/login" />} />
           <Route path="/join-meeting" element={isAuthenticated() ? <JoinMeeting /> : <Navigate to="/login" />} />
           <Route path="*" element={<h1>Not Found</h1>} />

@@ -1,227 +1,161 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { ref, child, update, onValue } from "firebase/database";
-import { database } from '../../services/firebase/config';
+import { useState, useEffect } from 'react';
+import sampleData from '../../constants/sampleData.js';
+
 const CheckSchedule = () => {
-    const [schedules, setSchedules] = useState([{}]);
-    const dbRef = ref(database);
+    const [schedules, setSchedules] = useState([]);
 
-    onValue((child(dbRef, 'videoCall/')), (snapshot) => {
-        const data = snapshot.val();
+    useEffect(() => {
+        setSchedules(sampleData.map(schedule => ({
+            ...schedule,
+            countdown: calculateCountdown(schedule.date, schedule.time, schedule.status)
+        })));
+    
+        const interval = setInterval(() => {
+            setSchedules(currentSchedules => currentSchedules.map(schedule => ({
+                ...schedule,
+                countdown: calculateCountdown(schedule.date, schedule.time, schedule.status)
+            })));
+        }, 1000);  
+    
+        return () => clearInterval(interval);
+    }, []);
 
-        const schedulesArray = Object.values(data);
-
-        if (schedulesArray.length !== schedules.length) {
-            setSchedules(schedulesArray);
+    const getStatusStyles = (status, countdown) => {
+        // Parse countdown to get hours left
+        let hoursLeft = 72; // Default high value for cases with undefined or incorrect countdown formats
+        const match = countdown.match(/(\d+)h/); // Extract hours from the countdown string
+        if (match) {
+            hoursLeft = parseInt(match[1], 10);
         }
-    });
+    
+        switch (status) {
+            case 'denied':
+                return { borderColor: '#808080', color: '#808080' }; // Grey for denied
+            case 'waiting':
+                return { borderColor: '#008000', color: '#008000' }; // Green for waiting
+            case 'finished':
+                return { borderColor: '#000080', color: '#000080' }; // Dark blue for finished
+            case 'pending':
+                // Transition from orange to red as time decreases
+                const hue = hoursLeft <= 24 ? 0 : (hoursLeft <= 48 ? 30 : 60);
+                return { borderColor: `hsl(${hue}, 100%, 50%)`, color: `hsl(${hue}, 100%, 40%)` };
+            default:
+                return { borderColor: 'initial', color: 'initial' };
+        }
+    };
+    
+    
+    const calculateCountdown = (date, time, status) => {
+        if (status !== 'pending' && status !== 'waiting') {
+            return "—"; // No countdown if not pending or waiting
+        }
+    
+        const now = new Date();
+        const appointmentTime = new Date(`${date}T${time}`);
+        const difference = appointmentTime - now;
+    
+        if (difference < 0) {
+            return "0s"; // Appointment time has passed
+        }
+    
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    
+        return `${hours}h ${minutes}m ${seconds}s`;
+    };    
+
+    const handleConfirm = (schedule) => {
+        const now = new Date().toISOString();
+        const updatedSchedules = schedules.map(sch => {
+            if (sch.id === schedule.id) {
+                return { ...sch, status: 'waiting', confirmedAt: now };
+            } else if (sch.time === schedule.time && sch.status === 'pending') {
+                return { ...sch, status: 'denied', deniedAt: now };
+            }
+            return sch;
+        });
+        setSchedules(updatedSchedules);
+    };
+
+    const handleDeny = (schedule) => {
+        const now = new Date().toISOString();
+        const updatedSchedules = schedules.map(sch =>
+            sch.id === schedule.id ? { ...sch, status: 'denied', deniedAt: now } : sch
+        );
+        setSchedules(updatedSchedules);
+    };
 
     function renderSchedules() {
         return schedules.map((schedule, index) => {
+            const styles = getStatusStyles(schedule.status, schedule.countdown);
             return (
-                <div className="col-lg-6 team-item" key={index}>
-                    <div className="row g-0 bg-light rounded overflow-hidden">
-                        <div className="col-12 col-sm-5 h-100">
-                            <img className="img-fluid h-100" src={schedule.photoURL
-                                ? schedule.photoURL
-                                : 'https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp'} style={{ 'object-fit': 'cover' }} alt='' />
-                        </div>
-                        <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                            <div className="mt-auto p-4">
-                                <h3>{schedule.username}</h3>
-                                <h6 className="fw-normal fst-italic text-primary mb-4">Physical Specialist</h6>
-                                <p className="m-0">Height: 5'10"</p>
-                                <p className="m-0">Weight: 150 lbs</p>
-                                <p className="m-0">Blood Pressure: 120/80</p>
-                                <p className="m-0">Heart Rate: 70 bpm</p>
-                            </div>
-                            <div className="d-flex mt-auto border-top p-4">
-                                <Link
-                                    className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3"
-                                    state={{ userID: schedule.userID, name: schedule.username }}
-                                    onClick={() => handleConfirm(schedule)}
-                                    to="/doctor/meeting"
-                                >
-                                    <i className="fa fa-calendar-check"></i>
+                <div className="col-md-6 col-lg-4 team-item" key={index}>
+                    <div className="card shadow-sm mb-3" style={{ borderColor: styles.borderColor, borderWidth: '3px' }}>
+                        <img className="card-img-top" src={schedule.photoURL} style={{ height: '400px', objectFit: 'cover' }} alt='' />
+                        <div className="card-body">
+                            <h5 className="card-title">{schedule.username}</h5>
+                            <p className="text-muted">Patient ID: {schedule.userID}</p>
+                            <p className="text-muted">Appointment ID: {schedule.appointmentID}</p>
+                            <p className="small mb-1">
+                                <strong>Appointment:</strong> {schedule.date} at {schedule.time}
+                            </p>
+                            <p className="small mb-2" style={{ color: styles.color }}>
+                                <strong>Status:</strong> {schedule.status}
+                            </p>
+                            <p className="small mb-2">
+                                <strong>Countdown:</strong> {schedule.countdown}
+                            </p>
+                            <div className="d-flex justify-content-between mb-1">
+                                {schedule.status === 'pending' && (
+                                    <>
+                                        <button className="btn btn-success btn-sm" style={{ padding: '6px 40px' }} onClick={() => handleConfirm(schedule)}>
+                                            Accept
+                                        </button>
+                                        <button className="btn btn-danger btn-sm" style={{ padding: '6px 40px' }} onClick={() => handleDeny(schedule)}>
+                                            Deny
+                                        </button>
+                                    </>
+                                )}
+                                {schedule.status === 'waiting' && (
+                                    <>
+                                        <button className="btn btn-primary btn-sm" style={{ padding: '6px 40px' }}>
+                                            <i className="fa fa-phone"></i> Call
+                                        </button>
+                                        <button className="btn btn-warning btn-sm" style={{ padding: '6px 40px' }}>
+                                            <i className="fa fa-file-alt"></i> Summary
+                                        </button>
+                                    </>
+                                )}
+                                {schedule.status === 'denied' && (
+                                    <span className="text-muted" style={{ fontSize: '16px' }}>
+                                        Denied at {schedule.deniedAt}
+                                    </span>
+                                )}
+                                <Link to={`/chat/${schedule.userID}`} className="btn btn-info btn-sm" style={{ padding: '6px 12px' }}>
+                                    <i className="fa fa-comments"></i>
                                 </Link>
-                                <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" ><i className="fa fa-phone"></i></Link>
-                                <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle"><i className="fa fa-info"></i></Link>
+                                <Link to={`/patient/${schedule.userID}`} className="btn btn-secondary btn-sm" style={{ padding: '6px 12px' }}>
+                                    <i className="fa fa-info"></i>
+                                </Link>
                             </div>
                         </div>
                     </div>
                 </div>
-            )
-        })
-    }
-
-    const handleConfirm = async (values) => {
-        const userConfirmed = schedules.find((value) => value.userID === values.userID);
-
-        const updates = {
-            [`videoCall/${userConfirmed.userID}/isAccepted`]: true
-        };
-
-        const dbRef = ref(database);
-
-        try {
-            await update(dbRef, updates);
-            console.log(`User with ID ${userConfirmed.userID} has been confirmed.`);
-        } catch (error) {
-            console.error('Error updating user confirmation:', error);
-        }
+            );
+        });
     }
 
     return (
-        <>
-            <div className="container-fluid pt-5">
-                <div className="container">
-                    <div className="text-center mx-auto mb-5" style={{ 'max-width': '500px' }}>
-                        <h5 className="d-inline-block text-primary text-uppercase border-bottom border-5">Check My Patient Appointments</h5>
-                        {/* <h1 className="display-4 mb-4">Find A Healthcare Professionals</h1>
-                        <h5 className="fw-normal">Duo ipsum erat stet dolor sea ut nonumy tempor. Tempor duo lorem eos sit sed ipsum takimata ipsum sit est. Ipsum ea voluptua ipsum sit justo</h5> */}
-                    </div>
-                    {/* <div className="mx-auto" style={{ 'width': '100%', 'max-width': '600px' }}>
-                        <div className="input-group">
-                            <select className="form-select border-primary w-25" style={{ 'height': '60px' }}>
-                                <option selected>Department</option>
-                                <option value="1">Department 1</option>
-                                <option value="2">Department 2</option>
-                                <option value="3">Department 3</option>
-                            </select>
-                            <input type="text" className="form-control border-primary w-50" placeholder="Keyword" />
-                            <button className="btn btn-dark border-0 w-25">Search</button>
-                        </div>
-                    </div> */}
+        <div className="container-fluid pt-3">
+            <div className="container">
+                <div className="row g-3">
+                    {renderSchedules()}
                 </div>
             </div>
-            <div className="container-fluid py-5">
-                <div className="container">
-                    <div className="row g-5">
-                        {renderSchedules()}
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZqszKbXC9ZLL-lHMwvw3OnyHF5PU3Us9xsk85_C_r9Q&s' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Patient 1</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Physical Specialist</h6>
-                                        <p className="m-0">Height: 5'10"</p>
-                                        <p className="m-0">Weight: 150 lbs</p>
-                                        <p className="m-0">Blood Pressure: 120/80</p>
-                                        <p className="m-0">Heart Rate: 70 bpm</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fa fa-phone"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fa fa-calendar-check"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fa fa-info"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Doctor Name</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                        <p className="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-twitter"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-facebook-f"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fab fa-linkedin-in"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://mdbcdn.b-cdn.net/img/new/avatars/2.webp' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Doctor Name</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                        <p className="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-twitter"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-facebook-f"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fab fa-linkedin-in"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Doctor Name</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                        <p className="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-twitter"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-facebook-f"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fab fa-linkedin-in"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://www.trx.ir/wp-content/uploads/2014/10/testimonial-avatar-2.jpg' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Doctor Name</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                        <p className="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-twitter"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-facebook-f"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fab fa-linkedin-in"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 team-item">
-                            <div className="row g-0 bg-light rounded overflow-hidden">
-                                <div className="col-12 col-sm-5 h-100">
-                                    <img className="img-fluid h-100" src='https://mdbcdn.b-cdn.net/img/new/avatars/8.webp' style={{ 'object-fit': 'cover' }} alt='' />
-                                </div>
-                                <div className="col-12 col-sm-7 h-100 d-flex flex-column">
-                                    <div className="mt-auto p-4">
-                                        <h3>Doctor Name</h3>
-                                        <h6 className="fw-normal fst-italic text-primary mb-4">Cardiology Specialist</h6>
-                                        <p className="m-0">Dolor lorem eos dolor duo eirmod sea. Dolor sit magna rebum clita rebum dolor</p>
-                                    </div>
-                                    <div className="d-flex mt-auto border-top p-4">
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-twitter"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle me-3" href="#"><i className="fab fa-facebook-f"></i></Link>
-                                        <Link className="btn btn-lg btn-primary btn-lg-square rounded-circle" href="#"><i className="fab fa-linkedin-in"></i></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-12 text-center">
-                            <button className="btn btn-primary py-3 px-5">Load More</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
+        </div>
+    );
 }
+
 export default CheckSchedule;
