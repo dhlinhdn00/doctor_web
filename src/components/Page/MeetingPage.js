@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import useUserContext from "../../hooks/useUserContext";
+// import useUserContext from "../../hooks/useUserContext";
 
 const MeetingDoctor = () => {
-    const { user } = useUserContext();
+    // const { user, saveUser } = useUserContext();
     let { state } = useLocation();
+    
     const date = new Date();
     const time = date.getHours() + ':' + date.getMinutes();
 
@@ -32,7 +33,7 @@ const MeetingDoctor = () => {
                                     </div>
                                     <div className="col-12 col-sm-6">
                                         <select className="form-select bg-white border-0" style={{ 'height': '55px' }}>
-                                            <option selected>{user.username}</option>
+                                            <option selected>Dao Hoai Linh</option>
                                             {/* <option value="1">Doctor 1</option>
                                             <option value="2">Doctor 2</option>
                                             <option value="3">Doctor 3</option> */}

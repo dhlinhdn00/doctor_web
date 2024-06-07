@@ -38,7 +38,7 @@ root.render(
           <Route path="/chat/:id" element={isAuthenticated() ? <Chat /> : <Navigate to="/login" />} />
           <Route path="/chat" element={isAuthenticated() ? <Chat /> : <Navigate to="/login" />} />
           <Route path="/info/:id" element={<PatientInfo />} />
-          <Route path="/doctor/meeting" element={isAuthenticated() ? <MeetingDoctor /> : <Navigate to="/login" />} />
+          <Route path="/meeting" element={isAuthenticated() ? <MeetingDoctor /> : <Navigate to="/login" />} />
           <Route path="/join-meeting" element={isAuthenticated() ? <JoinMeeting /> : <Navigate to="/login" />} />
           <Route path="*" element={<h1>Not Found</h1>} />
         </Routes>

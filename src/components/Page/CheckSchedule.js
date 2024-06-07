@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../constants/value';
+
 const CheckSchedule = () => {
     const [schedules, setSchedules] = useState([]);
+    const [isStale, setIsStale] = useState(false);
 
     function formatDate(dateString) {
         const [day, month, year] = dateString.split('/');
@@ -39,7 +41,7 @@ const CheckSchedule = () => {
 
         return () => clearInterval(interval);
 
-    }, []);
+    }, [isStale]);
 
     const getStatusStyles = (status, countdown) => {
         let hoursLeft = 72;
@@ -86,20 +88,10 @@ const CheckSchedule = () => {
     };
 
     const handleConfirm = (schedule) => {
-        const now = new Date().toISOString();
-        const updatedSchedules = schedules.map(sch => {
-            if (sch.id === schedule.id) {
-                return { ...sch, status: 'waiting', confirmedAt: now };
-            } else if (sch.startTime === schedule.startTime && sch.status === 'pending') {
-                return { ...sch, status: 'denied', deniedAt: now };
-            }
-            return sch;
-        });
-        setSchedules(updatedSchedules);
-
         axios.post(API_URL + 'doctor/update/appointment/' + schedule.id + '/status', 'waiting')
             .then((response) => {
                 console.log(response.data);
+                setIsStale(prev => !prev);
             })
             .catch((error) => {
                 console.error('Error updating data: ', error);
@@ -108,14 +100,22 @@ const CheckSchedule = () => {
 
     const handleDeny = (schedule) => {
         const now = new Date().toISOString();
-        const updatedSchedules = schedules.map(sch =>
-            sch.id === schedule.id ? { ...sch, status: 'denied', deniedAt: now } : sch
-        );
-        setSchedules(updatedSchedules);
 
         axios.post(API_URL + 'doctor/update/appointment/' + schedule.id + '/status', 'denied')
             .then((response) => {
                 console.log(response.data);
+                setIsStale(prev => !prev);
+            })
+            .catch((error) => {
+                console.error('Error updating data: ', error);
+            });
+    };
+
+    const handleFinish = (schedule) => {
+        axios.post(API_URL + 'doctor/update/appointment/' + schedule.id + '/status', 'finished')
+            .then((response) => {
+                console.log(response.data);
+                setIsStale(prev => !prev);
             })
             .catch((error) => {
                 console.error('Error updating data: ', error);
@@ -128,7 +128,6 @@ const CheckSchedule = () => {
             return (
                 <div className="col-md-6 col-lg-4 team-item" key={index}>
                     <div className="card shadow-sm mb-3" style={{ borderColor: styles.borderColor, borderWidth: '3px' }}>
-                        {/* <img className="card-img-top" src={schedule.photoURL} style={{ height: '400px', objectFit: 'cover' }} alt='' /> */}
                         <div className="card-body">
                             <h5 className="card-title">{schedule.patientEntity.name}</h5>
                             <p className="text-muted">Patient ID: {schedule.patientEntity.id}</p>
@@ -155,10 +154,11 @@ const CheckSchedule = () => {
                                 )}
                                 {schedule.status === 'waiting' && (
                                     <>
-                                        <button className="btn btn-primary btn-sm" style={{ padding: '6px 40px' }}>
+                                        <Link className="btn btn-primary btn-sm" style={{ padding: '6px 40px' }} to='/meeting' state={schedule.patientEntity} >
                                             <i className="fa fa-phone"></i> Call
-                                        </button>
-                                        <button className="btn btn-warning btn-sm" style={{ padding: '6px 40px' }}>
+                                        </Link>
+
+                                        <button className="btn btn-warning btn-sm" style={{ padding: '6px 40px' }} onClick={() => handleFinish(schedule)}>
                                             <i className="fa fa-file-alt"></i> Summary
                                         </button>
                                     </>
@@ -167,6 +167,16 @@ const CheckSchedule = () => {
                                     <span className="text-muted" style={{ fontSize: '16px' }}>
                                         Denied at {schedule.endTime ? schedule.date + ' ' + schedule.endTime : schedule.deniedAt}
                                     </span>
+                                )}
+                                {schedule.status === 'finished' && (
+                                    <>
+                                        <button className="btn btn-info btn-sm" style={{ padding: '6px 40px' }}>
+                                            <i className="fa fa-file-alt"></i> Record
+                                        </button>
+                                        <button className="btn btn-warning btn-sm" style={{ padding: '6px 40px' }}>
+                                            <i className="fa fa-file-alt"></i> Summary
+                                        </button>
+                                    </>
                                 )}
                                 <Link to={`/chat/${schedule.userID}`} className="btn btn-info btn-sm" style={{ padding: '6px 12px' }}>
                                     <i className="fa fa-comments"></i>

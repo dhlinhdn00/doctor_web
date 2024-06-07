@@ -9,7 +9,7 @@ const Home = () => {
                     <div className="row justify-content-start">
                         <div className="col-lg-8 text-center text-lg-start">
                             <h5 className="d-inline-block text-primary text-uppercase border-bottom border-5" style={{ 'border-color': 'rgba(256, 256, 256, .3) !important' }}>
-                                Welcome {user && user.username ? user.username : 'Guest'}
+                                Welcome {user && user.username ? user.username : 'DR. Phan Nguyên Đạt'}
                             </h5>
                             <h1 className="display-1 text-white mb-md-4">Best Healthcare Solution For Doctors</h1>
                             <div className="pt-2">

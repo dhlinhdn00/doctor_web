@@ -19,11 +19,11 @@ const Header = () => {
             <div className="col-md-6 text-center text-lg-start mb-2 mb-lg-0">
               <div className="d-inline-flex align-items-center">
                 <NavLink className="text-decoration-none text-body pe-3" to="/" style={{ color: 'black' }}>
-                  <i className="bi bi-telephone me-2"></i>+012 345 6789
+                  <i className="bi bi-telephone me-2"></i>+89 901176132
                 </NavLink>
                 <span className="text-body">|</span>
                 <NavLink className="text-decoration-none text-body px-3" to="/contact" style={{ color: 'black' }}>
-                  <i className="bi bi-envelope me-2"></i>info@example.com
+                  <i className="bi bi-envelope me-2"></i>daohoailinhdn00@gmail.com
                 </NavLink>
               </div>
             </div>
@@ -66,14 +66,14 @@ const Header = () => {
                   Chat
                 </NavLink>
                 <div className="nav-item dropdown">
-                  <NavLink
+                  {/* <NavLink
                     to="/pages"
                     className="nav-link dropdown-toggle"
                     data-bs-toggle="dropdown"
                     style={({ isActive }) => isActive ? activeLinkStyle : undefined}
                   >
                     Pages
-                  </NavLink>
+                  </NavLink> */}
                   <div className="dropdown-menu m-0">
                     <NavLink to="/blog" className="dropdown-item">
                       Blog Grid
@@ -96,7 +96,7 @@ const Header = () => {
                   </div>
                 </div>
                 <NavLink to="/contact" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
-                  Contact
+                  Profile
                 </NavLink>
                 {user ? (
                   <NavLink to="/" className="nav-item nav-link" onClick={logout} style={({ isActive }) => isActive ? activeLinkStyle : undefined}>

@@ -8,10 +8,10 @@ function Footer() {
                     <div className="row g-5">
                         <div className="col-lg-3 col-md-6">
                             <h4 className="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Get In Touch</h4>
-                            <p className="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor</p>
-                            <p className="mb-2"><i className="fa fa-map-marker-alt text-primary me-3"></i>123 Street, New York, USA</p>
-                            <p className="mb-2"><i className="fa fa-envelope text-primary me-3"></i>info@example.com</p>
-                            <p className="mb-0"><i className="fa fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
+                            <p className="mb-4">Linh-NHuy-Dat-Luong</p>
+                            <p className="mb-2"><i className="fa fa-map-marker-alt text-primary me-3"></i>54 Nguyen Luong Bang, Lien Chieu, Da Nang</p>
+                            <p className="mb-2"><i className="fa fa-envelope text-primary me-3"></i>daohoailinhdn00@gmail.com</p>
+                            <p className="mb-0"><i className="fa fa-phone-alt text-primary me-3"></i>+89 901176132</p>
                         </div>
                         <div className="col-lg-3 col-md-6">
                             <h4 className="d-inline-block text-primary text-uppercase border-bottom border-5 border-secondary mb-4">Quick Links</h4>
@@ -58,10 +58,10 @@ function Footer() {
                 <div className="container">
                     <div className="row g-5">
                         <div className="col-md-6 text-center text-md-start">
-                            <p className="mb-md-0">&copy; <Link className="text-primary" href="#">Your Site Name</Link>. All Rights Reserved.</p>
+                            <p className="mb-md-0">&copy; <Link className="text-primary" href="#">BONNE SANTÉ</Link>. All Rights Reserved.</p>
                         </div>
                         <div className="col-md-6 text-center text-md-end">
-                            <p className="mb-0">Designed by <Link className="text-primary" href="https://htmlcodex.com">HTML Codex</Link></p>
+                            <p className="mb-0">Designed by <Link className="text-primary" href="https://www.facebook.com/ngochuy.tran.7737">Huy Peo</Link></p>
                         </div>
                     </div>
                 </div>
