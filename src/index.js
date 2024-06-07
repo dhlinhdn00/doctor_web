@@ -15,6 +15,8 @@ import Register from './components/Page/Register';
 import ShowPatient from './components/Page/ShowPatient';
 import Chat from './components/Page/Chat';
 import PatientInfo from './components/Page/PatientInfo';
+import Profile from './components/Page/Profile';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -40,6 +42,7 @@ root.render(
           <Route path="/info/:id" element={<PatientInfo />} />
           <Route path="/meeting" element={isAuthenticated() ? <MeetingDoctor /> : <Navigate to="/login" />} />
           <Route path="/join-meeting" element={isAuthenticated() ? <JoinMeeting /> : <Navigate to="/login" />} />
+          <Route path="/profile" element={isAuthenticated() ? <Profile /> : <Navigate to="/login" />} />
           <Route path="*" element={<h1>Not Found</h1>} />
         </Routes>
       </App>

@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Updates every second
+    return () => clearInterval(timer);
+  }, []);
 
   // Define active link style
   const activeLinkStyle = {
@@ -24,6 +32,10 @@ const Header = () => {
                 <span className="text-body">|</span>
                 <NavLink className="text-decoration-none text-body px-3" to="/contact" style={{ color: 'black' }}>
                   <i className="bi bi-envelope me-2"></i>daohoailinhdn00@gmail.com
+                </NavLink>
+                <span className="text-body">|</span>
+                <NavLink className="text-decoration-none text-body px-3" to="/" style={{ color: 'black' }}>
+                  <i className="bi bi-clock me-2"></i>{currentTime.toLocaleTimeString()}
                 </NavLink>
               </div>
             </div>
@@ -65,7 +77,7 @@ const Header = () => {
                 <NavLink to="/chat" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Chat
                 </NavLink>
-                <div className="nav-item dropdown">
+                {/* <div className="nav-item dropdown"> */}
                   {/* <NavLink
                     to="/pages"
                     className="nav-link dropdown-toggle"
@@ -74,7 +86,7 @@ const Header = () => {
                   >
                     Pages
                   </NavLink> */}
-                  <div className="dropdown-menu m-0">
+                  {/* <div className="dropdown-menu m-0">
                     <NavLink to="/blog" className="dropdown-item">
                       Blog Grid
                     </NavLink>
@@ -93,9 +105,9 @@ const Header = () => {
                     <NavLink to="/search" className="dropdown-item">
                       Search
                     </NavLink>
-                  </div>
-                </div>
-                <NavLink to="/contact" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  </div> */}
+                {/* </div> */}
+                <NavLink to="/profile" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Profile
                 </NavLink>
                 {user ? (
