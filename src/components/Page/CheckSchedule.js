@@ -1,34 +1,53 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import sampleData from '../../constants/sampleData.js';
-
+import axios from 'axios';
+import { API_URL } from '../../constants/value';
 const CheckSchedule = () => {
     const [schedules, setSchedules] = useState([]);
 
+    function formatDate(dateString) {
+        const [day, month, year] = dateString.split('/');
+        const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        return formattedDate;
+    }
+
+    function formatTime(timeString) {
+        const [hour, minute] = timeString.split(':');
+        const formattedTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+        return formattedTime;
+    }
+
     useEffect(() => {
-        setSchedules(sampleData.map(schedule => ({
-            ...schedule,
-            countdown: calculateCountdown(schedule.date, schedule.time, schedule.status)
-        })));
-    
+        axios.get(API_URL + 'doctor/1/appointment')
+            .then((response) => {
+                console.log(response.data);
+                setSchedules(response.data.map(schedule => ({
+                    ...schedule,
+                    countdown: calculateCountdown(formatDate(schedule.date), formatTime(schedule.startTime), schedule.status)
+                })));
+            })
+            .catch((error) => {
+                console.error('Error fetching data: ', error);
+            });
+
         const interval = setInterval(() => {
             setSchedules(currentSchedules => currentSchedules.map(schedule => ({
                 ...schedule,
-                countdown: calculateCountdown(schedule.date, schedule.time, schedule.status)
+                countdown: calculateCountdown(formatDate(schedule.date), formatTime(schedule.startTime), schedule.status)
             })));
-        }, 1000);  
-    
+        }, 1000);
+
         return () => clearInterval(interval);
+
     }, []);
 
     const getStatusStyles = (status, countdown) => {
-        // Parse countdown to get hours left
-        let hoursLeft = 72; // Default high value for cases with undefined or incorrect countdown formats
-        const match = countdown.match(/(\d+)h/); // Extract hours from the countdown string
+        let hoursLeft = 72;
+        const match = countdown.match(/(\d+)h/);
         if (match) {
             hoursLeft = parseInt(match[1], 10);
         }
-    
+
         switch (status) {
             case 'denied':
                 return { borderColor: '#808080', color: '#808080' }; // Grey for denied
@@ -44,39 +63,47 @@ const CheckSchedule = () => {
                 return { borderColor: 'initial', color: 'initial' };
         }
     };
-    
-    
+
     const calculateCountdown = (date, time, status) => {
         if (status !== 'pending' && status !== 'waiting') {
             return "—"; // No countdown if not pending or waiting
         }
-    
+
         const now = new Date();
         const appointmentTime = new Date(`${date}T${time}`);
+
         const difference = appointmentTime - now;
-    
+
         if (difference < 0) {
             return "0s"; // Appointment time has passed
         }
-    
+
         const hours = Math.floor(difference / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-    
+
         return `${hours}h ${minutes}m ${seconds}s`;
-    };    
+    };
 
     const handleConfirm = (schedule) => {
         const now = new Date().toISOString();
         const updatedSchedules = schedules.map(sch => {
             if (sch.id === schedule.id) {
                 return { ...sch, status: 'waiting', confirmedAt: now };
-            } else if (sch.time === schedule.time && sch.status === 'pending') {
+            } else if (sch.startTime === schedule.startTime && sch.status === 'pending') {
                 return { ...sch, status: 'denied', deniedAt: now };
             }
             return sch;
         });
         setSchedules(updatedSchedules);
+
+        axios.post(API_URL + 'doctor/update/appointment/' + schedule.id + '/status', 'waiting')
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Error updating data: ', error);
+            });
     };
 
     const handleDeny = (schedule) => {
@@ -85,6 +112,14 @@ const CheckSchedule = () => {
             sch.id === schedule.id ? { ...sch, status: 'denied', deniedAt: now } : sch
         );
         setSchedules(updatedSchedules);
+
+        axios.post(API_URL + 'doctor/update/appointment/' + schedule.id + '/status', 'denied')
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Error updating data: ', error);
+            });
     };
 
     function renderSchedules() {
@@ -93,13 +128,13 @@ const CheckSchedule = () => {
             return (
                 <div className="col-md-6 col-lg-4 team-item" key={index}>
                     <div className="card shadow-sm mb-3" style={{ borderColor: styles.borderColor, borderWidth: '3px' }}>
-                        <img className="card-img-top" src={schedule.photoURL} style={{ height: '400px', objectFit: 'cover' }} alt='' />
+                        {/* <img className="card-img-top" src={schedule.photoURL} style={{ height: '400px', objectFit: 'cover' }} alt='' /> */}
                         <div className="card-body">
-                            <h5 className="card-title">{schedule.username}</h5>
-                            <p className="text-muted">Patient ID: {schedule.userID}</p>
-                            <p className="text-muted">Appointment ID: {schedule.appointmentID}</p>
+                            <h5 className="card-title">{schedule.patientEntity.name}</h5>
+                            <p className="text-muted">Patient ID: {schedule.patientEntity.id}</p>
+                            <p className="text-muted">Appointment ID: {schedule.id}</p>
                             <p className="small mb-1">
-                                <strong>Appointment:</strong> {schedule.date} at {schedule.time}
+                                <strong>Appointment:</strong> {formatDate(schedule.date)} at {schedule.startTime}
                             </p>
                             <p className="small mb-2" style={{ color: styles.color }}>
                                 <strong>Status:</strong> {schedule.status}
