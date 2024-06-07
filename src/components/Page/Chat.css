@@ -1,0 +1,104 @@
+.chat-container {
+    display: flex;
+    height: 80vh;
+  }
+  
+  .patient-list {
+    width: 250px;
+    overflow-y: auto;
+    border-right: 1px solid #ccc;
+  }
+  
+  .chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .messages-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+  
+  .message {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .message.sent {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  
+  .message.received {
+    justify-content: flex-start;
+    text-align: left;
+  }
+  
+  .message p {
+    background-color: #f1f0f0;
+    padding: 8px 15px;
+    border-radius: 20px;
+    max-width: 70%;
+  }
+  
+  .message.sent p {
+    background-color: #dcf8c6;
+  }
+  
+  .message.received p {
+    background-color: #ebebeb;
+  }
+  
+  .message span {
+    font-size: 0.75rem;
+    padding: 0 8px;
+  }
+  
+  .message-input {
+    display: flex;
+  }
+  
+  .message-input .form-control {
+    flex-grow: 1;
+  }
+  
+  .message-input button {
+    width: 100px;
+  }
+  
+  .active-patient {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+  
+  .chat-header {
+    font-size: 24px;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .intro-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .intro-content h3 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .intro-content p {
+    font-size: 18px;
+  }
+  
+  .welcome-message p {
+    font-size: 24px;
+    margin: 20px 0;
+  }
+  

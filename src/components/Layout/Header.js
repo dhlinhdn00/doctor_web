@@ -62,8 +62,8 @@ const Header = () => {
                 <NavLink to="/show-patient" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Patient
                 </NavLink>
-                <NavLink to="/pricing" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
-                  Pricing
+                <NavLink to="/chat" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  Chat
                 </NavLink>
                 <div className="nav-item dropdown">
                   <NavLink
