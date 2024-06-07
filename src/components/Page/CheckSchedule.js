@@ -165,7 +165,7 @@ const CheckSchedule = () => {
                                 )}
                                 {schedule.status === 'denied' && (
                                     <span className="text-muted" style={{ fontSize: '16px' }}>
-                                        Denied at {schedule.deniedAt}
+                                        Denied at {schedule.endTime ? schedule.date + ' ' + schedule.endTime : schedule.deniedAt}
                                     </span>
                                 )}
                                 <Link to={`/chat/${schedule.userID}`} className="btn btn-info btn-sm" style={{ padding: '6px 12px' }}>
