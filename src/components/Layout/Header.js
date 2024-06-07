@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
+//import i18n from 'i18n';
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const [currentTime, setCurrentTime] = useState(new Date());
+ // const [language, setLanguage] = useState(i18n.language); 
+
+  // const handleLanguageChange = (lang) => {
+  //   setLanguage(lang);
+  //   i18n.changeLanguage(lang);
+  //    // Add your language change logic here, like updating i18next language
+  // };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Updates every second
+    return () => clearInterval(timer);
+  }, []);
 
   // Define active link style
   const activeLinkStyle = {
@@ -25,6 +41,21 @@ const Header = () => {
                 <NavLink className="text-decoration-none text-body px-3" to="/contact" style={{ color: 'black' }}>
                   <i className="bi bi-envelope me-2"></i>info@example.com
                 </NavLink>
+                <span className="text-body">|</span>
+                <NavLink className="text-decoration-none text-body px-3" to="/" style={{ color: 'black' }}>
+                  <i className="bi bi-clock me-2"></i>{currentTime.toLocaleTimeString()}
+                </NavLink>
+                {/* <span className="text-body">|</span>
+                <div className="dropdown">
+                  <NavLink to="#" className="text-decoration-none text-body px-3 dropdown-toggle" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style={{ color: 'black' }}>
+                    <i className="bi bi-translate me-2"></i>{language}
+                  </NavLink>
+                  <ul className="dropdown-menu" aria-labelledby="languageDropdown">
+                    <li><a className="dropdown-item" href="#" onClick={() => handleLanguageChange('English')}>English</a></li>
+                    <li><a className="dropdown-item" href="#" onClick={() => handleLanguageChange('Vietnamese')}>Vietnamese</a></li>
+                    <li><a className="dropdown-item" href="#" onClick={() => handleLanguageChange('French')}>French</a></li>
+                  </ul>
+                </div> */}
               </div>
             </div>
             <div className="col-md-6 text-center text-lg-end">
@@ -65,7 +96,7 @@ const Header = () => {
                 <NavLink to="/chat" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                   Chat
                 </NavLink>
-                <div className="nav-item dropdown">
+                {/* <div className="nav-item dropdown">
                   <NavLink
                     to="/pages"
                     className="nav-link dropdown-toggle"
@@ -94,10 +125,13 @@ const Header = () => {
                       Search
                     </NavLink>
                   </div>
-                </div>
-                <NavLink to="/contact" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
-                  Contact
+                </div> */}
+                <NavLink to="/profile" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  Profile
                 </NavLink>
+                {/* <NavLink to="/contact" className="nav-item nav-link" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+                  Contact
+                </NavLink> */}
                 {user ? (
                   <NavLink to="/" className="nav-item nav-link" onClick={logout} style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
                     Logout
