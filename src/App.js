@@ -1,6 +1,7 @@
 import Footer from './components/Layout/Footer';
 import Header from './components/Layout/Header';
 import { AuthProvider } from './context/authContext'; 
+import './App.css';
 
 function App(props) {
   return (

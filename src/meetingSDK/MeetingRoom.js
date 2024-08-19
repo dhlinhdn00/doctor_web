@@ -37,12 +37,12 @@ function MeetingRoom({ role = 0 }) {
             [`videoCall/${userID}/isAccepted`]: true
         };
 
-        const UpdateOutDatedResult = {
-            [`result/${userID}/result/isOutDated`]: true
-        }
+        // const UpdateOutDatedResult = {
+        //     [`result/${userID}/result/isOutDated`]: true
+        // }
 
         try {
-            await update(dbRef, UpdateOutDatedResult)
+            // await update(dbRef, UpdateOutDatedResult)
             await update(dbRef, updates);
             console.log(`User with ID ${userID} has been confirmed.`);
         } catch (error) {
